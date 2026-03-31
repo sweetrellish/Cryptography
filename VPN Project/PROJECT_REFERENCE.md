@@ -7,7 +7,9 @@ This document summarizes all major setup/debug/refactor steps completed so far f
 - Existing VPN simulator retained: `VPNSimulator.py`
 - New AES-focused starter GUI added: `AESSimulator.py`
 - AES logic extracted into reusable module: `aes_core.py`
+- Process-focused AES-128 (Rijndael) module added: `aes_core_process.py`
 - Unit tests added for AES core: `tests/test_aes_core.py`
+- Unit tests added for process module: `tests/test_aes_core_process.py`
 - Setup documentation and troubleshooting improved: `README.md`
 - Team dependency pinning file added: `requirements.txt`
 
@@ -55,6 +57,7 @@ The list below captures the important command sequence used during diagnosis and
 - `/opt/homebrew/bin/python3.13 -m py_compile AESSimulator.py`
 - `/opt/homebrew/bin/python3.13 -m py_compile AESSimulator.py aes_core.py tests/test_aes_core.py`
 - `/opt/homebrew/bin/python3.13 -m unittest tests/test_aes_core.py -v`
+- `/opt/homebrew/bin/python3.13 -m unittest tests/test_aes_core_process.py -v`
 
 ### Dependency Snapshot/Pinning
 
@@ -78,6 +81,20 @@ The list below captures the important command sequence used during diagnosis and
 - Verify CBC and GCM round trips.
 - Verify GCM integrity failures when ciphertext is tampered.
 - Verify mode comparison behavior showing ECB pattern leakage.
+- Verify FIPS-197 AES-128 known-answer vector in process implementation.
+- Verify process-focused CBC round trips and trace generation behavior.
+
+### Why a process-focused AES module was added
+
+- Supports cryptography class emphasis on understanding Rijndael round transformations.
+- Makes encryption/decryption internals explicit (SubBytes, ShiftRows, MixColumns, AddRoundKey, key schedule, inverse rounds).
+- Enables trace-driven classroom walkthroughs without changing the standard cryptography-library path.
+
+### Why AESSimulator now has engine selection
+
+- Preserves existing Standard path for AES-CBC/AES-GCM demos.
+- Adds a Rijndael Process path for AES-128 CBC process walkthroughs.
+- Allows side-by-side teaching: secure mode usage and algorithm internals in one GUI.
 
 ### Why the new mode comparison lab was added
 
@@ -93,16 +110,19 @@ The list below captures the important command sequence used during diagnosis and
 - `VPNSimulator.py`: Original networking-focused simulator
 - `AESSimulator.py`: AES-focused educational GUI
 - `aes_core.py`: Reusable cryptography functions and mode comparison helper
+- `aes_core_process.py`: Explicit AES-128 Rijndael process implementation with optional trace output
 - `tests/test_aes_core.py`: Unit tests
+- `tests/test_aes_core_process.py`: Unit tests for process-focused AES behavior
 
 ## 6) Recommended Team Workflow
 
 1. Create/activate venv with Python 3.13.
 2. Install dependencies from `requirements.txt`.
-3. Make crypto changes in `aes_core.py` first.
-4. Run tests before GUI demos.
-5. Demo behavior in `AESSimulator.py`.
-6. Keep `VPNSimulator.py` unchanged unless network behavior is the goal.
+3. Make Standard-engine crypto changes in `aes_core.py`.
+4. Make process-engine crypto changes in `aes_core_process.py`.
+5. Run tests before GUI demos.
+6. Demo both engines in `AESSimulator.py`.
+7. Keep `VPNSimulator.py` unchanged unless network behavior is the goal.
 
 ## 7) Next Good Enhancements (Optional)
 

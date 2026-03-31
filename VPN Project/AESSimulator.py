@@ -21,6 +21,8 @@ from aes_core import parse_hex_or_raise
 from aes_core import random_iv
 from aes_core import random_key
 from aes_core import validate_iv_for_mode
+from aes_core_process import aes_cbc_decrypt_process
+from aes_core_process import aes_cbc_encrypt_process
 
 
 DEFAULT_PATTERN_SAMPLE = "BLOCK-16-REPEAT!" * 8
@@ -30,27 +32,47 @@ class AESSimulatorApp:
         self.root = root
         self.root.title("MATH 447 - AES Encryption Simulator")
 
+        self.engine_var = tk.StringVar(value="Standard")
         self.mode_var = tk.StringVar(value="CBC")
         self.key_size_var = tk.StringVar(value="256")
+        self.process_trace_var = tk.BooleanVar(value=False)
 
         self._build_ui()
         self._on_mode_change()
+        self._on_engine_change()
 
     def _build_ui(self) -> None:
         top = tk.Frame(self.root)
         top.pack(fill=tk.X, padx=10, pady=8)
 
-        tk.Label(top, text="AES Mode:").grid(row=0, column=0, sticky="w")
-        tk.OptionMenu(top, self.mode_var, "CBC", "GCM", command=lambda _: self._on_mode_change()).grid(
-            row=0, column=1, sticky="w"
+        tk.Label(top, text="Engine:").grid(row=0, column=0, sticky="w")
+        self.engine_menu = tk.OptionMenu(
+            top,
+            self.engine_var,
+            "Standard",
+            "Rijndael Process",
+            command=lambda _: self._on_engine_change(),
         )
+        self.engine_menu.grid(row=0, column=1, sticky="w")
 
-        tk.Label(top, text="Key Size (bits):").grid(row=0, column=2, padx=(12, 0), sticky="w")
-        tk.OptionMenu(top, self.key_size_var, "128", "192", "256").grid(row=0, column=3, sticky="w")
+        tk.Label(top, text="AES Mode:").grid(row=0, column=2, padx=(12, 0), sticky="w")
+        self.mode_menu = tk.OptionMenu(top, self.mode_var, "CBC", "GCM", command=lambda _: self._on_mode_change())
+        self.mode_menu.grid(row=0, column=3, sticky="w")
+
+        tk.Label(top, text="Key Size (bits):").grid(row=0, column=4, padx=(12, 0), sticky="w")
+        self.key_size_menu = tk.OptionMenu(top, self.key_size_var, "128", "192", "256")
+        self.key_size_menu.grid(row=0, column=5, sticky="w")
 
         tk.Button(top, text="Generate Key + IV", command=self.generate_material).grid(
-            row=0, column=4, padx=(12, 0)
+            row=0, column=6, padx=(12, 0)
         )
+
+        self.trace_checkbox = tk.Checkbutton(
+            top,
+            text="Include process trace",
+            variable=self.process_trace_var,
+        )
+        self.trace_checkbox.grid(row=0, column=7, padx=(12, 0), sticky="w")
 
         key_frame = tk.Frame(self.root)
         key_frame.pack(fill=tk.X, padx=10, pady=4)
@@ -117,6 +139,12 @@ class AESSimulatorApp:
         )
 
     def _on_mode_change(self) -> None:
+        if self.engine_var.get() == "Rijndael Process":
+            self.aad_entry.config(state="disabled")
+            self.aad_entry.delete(0, tk.END)
+            self.status_var.set("Engine: Rijndael Process (AES-128 CBC with optional round tracing)")
+            return
+
         mode_name = self.mode_var.get()
         if mode_name == "CBC":
             self.aad_entry.config(state="disabled")
@@ -126,10 +154,27 @@ class AESSimulatorApp:
             self.aad_entry.config(state="normal")
             self.status_var.set("Mode: GCM (confidentiality + integrity/authentication)")
 
+    def _on_engine_change(self) -> None:
+        using_process = self.engine_var.get() == "Rijndael Process"
+
+        if using_process:
+            self.mode_var.set("CBC")
+            self.key_size_var.set("128")
+            self.mode_menu.config(state="disabled")
+            self.key_size_menu.config(state="disabled")
+            self.trace_checkbox.config(state="normal")
+        else:
+            self.mode_menu.config(state="normal")
+            self.key_size_menu.config(state="normal")
+            self.trace_checkbox.config(state="disabled")
+            self.process_trace_var.set(False)
+
+        self._on_mode_change()
+
     def generate_material(self) -> None:
         try:
-            key_size_bits = int(self.key_size_var.get())
-            mode_name = self.mode_var.get()
+            key_size_bits = 128 if self.engine_var.get() == "Rijndael Process" else int(self.key_size_var.get())
+            mode_name = "CBC" if self.engine_var.get() == "Rijndael Process" else self.mode_var.get()
             key = random_key(key_size_bits)
             iv = random_iv(mode_name)
 
@@ -150,10 +195,14 @@ class AESSimulatorApp:
                 raise ValueError("Plaintext input cannot be empty")
 
             key = parse_hex_or_raise("Key", self.key_entry.get())
-            if not key_length_valid(key):
+            mode_name = "CBC" if self.engine_var.get() == "Rijndael Process" else self.mode_var.get()
+
+            if self.engine_var.get() == "Rijndael Process":
+                if len(key) != 16:
+                    raise ValueError("Rijndael Process engine requires AES-128 key (16 bytes / 32 hex chars)")
+            elif not key_length_valid(key):
                 raise ValueError("AES key must be 16, 24, or 32 bytes (32/48/64 hex chars)")
 
-            mode_name = self.mode_var.get()
             iv_text = self.iv_entry.get().strip()
             iv = bytes.fromhex(iv_text) if iv_text else random_iv(mode_name)
             validate_iv_for_mode(iv, mode_name)
@@ -161,11 +210,21 @@ class AESSimulatorApp:
             self.iv_entry.delete(0, tk.END)
             self.iv_entry.insert(0, iv.hex())
 
-            aad = b""
-            if mode_name == "GCM":
-                aad = self.aad_entry.get().encode("utf-8") if self.aad_entry.get() else b""
+            if self.engine_var.get() == "Rijndael Process":
+                packet = aes_cbc_encrypt_process(
+                    plaintext=plaintext,
+                    key=key,
+                    iv=iv,
+                    include_trace=self.process_trace_var.get(),
+                )
+                packet["engine"] = "Rijndael Process"
+            else:
+                aad = b""
+                if mode_name == "GCM":
+                    aad = self.aad_entry.get().encode("utf-8") if self.aad_entry.get() else b""
+                packet = aes_encrypt(plaintext=plaintext, key=key, iv=iv, mode_name=mode_name, aad=aad)
+                packet["engine"] = "Standard"
 
-            packet = aes_encrypt(plaintext=plaintext, key=key, iv=iv, mode_name=mode_name, aad=aad)
             packet["key_size_bits"] = len(key) * 8
 
             self.packet_box.delete("1.0", tk.END)
@@ -183,10 +242,29 @@ class AESSimulatorApp:
 
             packet = json.loads(packet_text)
             key = parse_hex_or_raise("Key", self.key_entry.get())
-            if not key_length_valid(key):
-                raise ValueError("AES key must be 16, 24, or 32 bytes (32/48/64 hex chars)")
+            use_process = packet.get("engine") == "Rijndael Process" or packet.get("algorithm") == "AES-128 (Rijndael)"
 
-            plaintext = aes_decrypt(packet, key)
+            if use_process:
+                if len(key) != 16:
+                    raise ValueError("Rijndael Process engine requires AES-128 key (16 bytes / 32 hex chars)")
+                result = aes_cbc_decrypt_process(
+                    packet=packet,
+                    key=key,
+                    include_trace=self.process_trace_var.get(),
+                )
+                plaintext = result["plaintext"]
+
+                if "trace" in result:
+                    self.comparison_box.delete("1.0", tk.END)
+                    self.comparison_box.insert(
+                        tk.END,
+                        f"Process trace blocks generated during decryption: {len(result['trace'])}\n"
+                        "Tip: inspect packet JSON for full encryption trace and use include-trace for decrypt trace.",
+                    )
+            else:
+                if not key_length_valid(key):
+                    raise ValueError("AES key must be 16, 24, or 32 bytes (32/48/64 hex chars)")
+                plaintext = aes_decrypt(packet, key)
 
             self.decrypted_box.delete("1.0", tk.END)
             self.decrypted_box.insert(tk.END, plaintext)

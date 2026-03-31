@@ -22,13 +22,15 @@ python AESSimulator.py
 ## Project Files
 
 - `VPNSimulator.py`: Main GUI application.
-- `AESSimulator.py`: AES-focused simulator starter for MATH 447 (CBC and GCM demos).
+- `AESSimulator.py`: AES-focused simulator starter for MATH 447 with two engines: Standard (CBC/GCM) and Rijndael Process (AES-128 CBC + trace).
 - `aes_core.py`: Reusable AES helper functions used by the GUI.
+- `aes_core_process.py`: Process-focused AES-128 (Rijndael) teaching module with explicit round operations and optional traces.
 - `vpn_simulation.py`: Supporting simulation logic.
 - `tooltip.py`: Tooltip helper used by the GUI.
 - `tink.py`: Tkinter-related helper/demo script.
 - `SSL.py`: SSL socket-related demo script.
 - `tests/test_aes_core.py`: Unit tests for AES core behavior.
+- `tests/test_aes_core_process.py`: Unit tests for the process-focused AES teaching module.
 - `PROJECT_REFERENCE.md`: Command log + technical timeline of all work completed.
 
 ## Prerequisites
@@ -79,20 +81,28 @@ If you are not using the virtual environment:
 python AESSimulator.py
 ```
 
+Inside the AES starter:
+
+- Choose `Engine = Standard` for library-backed AES-CBC and AES-GCM demos.
+- Choose `Engine = Rijndael Process` for a step-focused AES-128 CBC flow that can include round traces.
+- Enable `Include process trace` before encryption/decryption to include transformation details in packet/results.
+
 Inside the AES starter, use the Mode Comparison Lab button to run an ECB vs CBC vs GCM pattern-leakage demo.
 
 ## Tinker Workflow (Recommended)
 
 For robust team experimentation, use this order:
 
-1. Edit crypto logic in `aes_core.py`.
-2. Run tests to confirm behavior.
-3. Use `AESSimulator.py` to interactively demo your changes.
+1. Edit crypto logic in `aes_core.py` for Standard engine behavior.
+2. Edit crypto logic in `aes_core_process.py` for explicit Rijndael round-process behavior.
+3. Run tests to confirm behavior.
+4. Use `AESSimulator.py` to interactively demo both engines.
 
 Run tests:
 
 ```bash
 python -m unittest tests/test_aes_core.py -v
+python -m unittest tests/test_aes_core_process.py -v
 ```
 
 ## Full Reference Log
