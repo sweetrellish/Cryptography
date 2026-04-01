@@ -1,6 +1,7 @@
 # Cryptography - Educational VPN + AES Mode Lab
 
 ## Overview
+
 This repo is a hands-on learning environment centered on secure communication concepts, built around a Python + Tkinter GUI VPN simulator and a companion AES classroom simulator.
 
 This project is intentionally a simulation/teaching environment, not production VPN software.
@@ -10,9 +11,11 @@ This project is intentionally a simulation/teaching environment, not production 
 ## What's Inside
 
 ### 1) VPN Simulator (COSC 370)
+
 `VPN Project/VPNSimulator.py`
 
 A Tkinter-based VPN transfer simulation that:
+
 - Packages user input into a JSON packet
 - Encrypts the packet using AES (CBC or GCM selectable)
 - Shows tunnel view (IV + ciphertext) and server-side decrypted output
@@ -22,9 +25,11 @@ A Tkinter-based VPN transfer simulation that:
 Concepts demonstrated: packet encapsulation, confidentiality vs integrity, IVs/nonces, key exchange, and encrypted traffic representation in transit.
 
 ### 2) AES Encryption Simulator (MATH 447 Starter)
+
 `VPN Project/AESSimulator.py` with `VPN Project/aes_core.py` and `VPN Project/aes_core_process.py`
 
 A standalone GUI for AES experimentation:
+
 - Standard engine supports AES-CBC (PKCS7 padding) and AES-GCM (AEAD with tag + optional AAD)
 - Rijndael Process engine provides process-focused AES-128 CBC with optional round/block trace output
 - Generates keys + IV/nonce, encrypts plaintext into a JSON packet, and decrypts back
@@ -33,7 +38,9 @@ A standalone GUI for AES experimentation:
 Why it's clean: crypto logic is extracted into reusable modules (`aes_core.py` and `aes_core_process.py`) to keep GUI code simple and testable.
 
 ### 3) Tests + Reproducibility
+
 `VPN Project/tests/test_aes_core.py` and `VPN Project/tests/test_aes_core_process.py`
+
 - Verifies CBC and GCM round-trip correctness in the standard path
 - Verifies GCM integrity checks fail on tampering
 - Verifies ECB pattern leakage comparison behavior
@@ -42,6 +49,7 @@ Why it's clean: crypto logic is extracted into reusable modules (`aes_core.py` a
 ---
 
 ## Repo Layout (High-Level)
+
 - `VPN Project/README.md`: main usage guide + troubleshooting
 - `VPN Project/PROJECT_REFERENCE.md`: implementation timeline and command log
 - `VPN Project/VPNSimulator.py`: VPN simulator GUI demo
@@ -55,6 +63,7 @@ Why it's clean: crypto logic is extracted into reusable modules (`aes_core.py` a
 ---
 
 ## Quick Start
+
 From `VPN Project/`:
 
 ```bash
