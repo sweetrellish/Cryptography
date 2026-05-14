@@ -1,5 +1,5 @@
 """
-AES Encryption Simulator (MATH 447 Cryptography Presentation Mode)
+AES Encryption Simulator (MATH 447 starter)
 
 This standalone GUI focuses on AES encryption/decryption concepts.
 It supports AES-CBC (with PKCS7 padding) and AES-GCM (authenticated encryption).
@@ -13,7 +13,7 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import scrolledtext
 from pathlib import Path
-from typing import TypedDict
+from typing import cast
 
 from cryptography.exceptions import InvalidTag
 from aes_core import aes_decrypt
@@ -31,94 +31,17 @@ from aes_core_process import aes_cbc_encrypt_process
 DEFAULT_PATTERN_SAMPLE = "BLOCK-16-REPEAT!" * 8
 
 
-class PresentationPreset(TypedDict):
-    engine: str
-    mode: str
-    key_size_bits: str
-    key_hex: str
-    iv_hex: str
-    aad_text: str
-    plaintext: str
-    process_trace_enabled: bool
-    run_pattern_demo: bool
-
-
-class PresentationState(TypedDict):
-    exported_at: str
-    engine: str
-    mode: str
-    key_size_bits: str
-    process_trace_enabled: bool
-    key_hex: str
-    iv_hex: str
-    aad_text: str
-    plaintext: str
-    packet_text: str
-    packet: dict[str, object]
-    decrypted_text: str
-    comparison_text: str
-    status: str
-
-
-PRESENTATION_PRESETS: dict[str, PresentationPreset] = {
-    "Standard Cipher Block Chaining (CBC)": {
-        "engine": "Standard",
-        "mode": "Cipher Block Chaining (CBC)",
-        "key_size_bits": "128",
-        "key_hex": "00112233445566778899aabbccddeeff",
-        "iv_hex": "0f0e0d0c0b0a09080706050403020100",
-        "aad_text": "",
-        "plaintext": "Meet at 5 PM by the library steps.",
-        "process_trace_enabled": False,
-        "run_pattern_demo": False,
-    },
-    "Standard Galois/Counter Mode (GCM) Integrity Demo": {
-        "engine": "Standard",
-        "mode": "Galois/Counter Mode (GCM)",
-        "key_size_bits": "256",
-        "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
-        "iv_hex": "1a1b1c1d1e1f202122232425",
-        "aad_text": "attendance-sheet",
-        "plaintext": "GCM adds authentication so tampering is detectable.",
-        "process_trace_enabled": False,
-        "run_pattern_demo": False,
-    },
-    "Rijndael Trace Walkthrough": {
-        "engine": "Rijndael Process",
-        "mode": "Cipher Block Chaining (CBC)",
-        "key_size_bits": "128",
-        "key_hex": "000102030405060708090a0b0c0d0e0f",
-        "iv_hex": "0f0e0d0c0b0a09080706050403020100",
-        "aad_text": "",
-        "plaintext": "Rijndael rounds transform the state step by step.",
-        "process_trace_enabled": True,
-        "run_pattern_demo": False,
-    },
-    "Pattern Leakage Demo": {
-        "engine": "Standard",
-        "mode": "Cipher Block Chaining (CBC)",
-        "key_size_bits": "256",
-        "key_hex": "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff",
-        "iv_hex": "11223344556677889900aabbccddeeff",
-        "aad_text": "",
-        "plaintext": DEFAULT_PATTERN_SAMPLE,
-        "process_trace_enabled": False,
-        "run_pattern_demo": True,
-    },
-}
-
-
-def _presentation_summary(state: PresentationState) -> str:
+def _presentation_summary(state: dict[str, object]) -> str:
     packet = state["packet"]
     packet_text = state["packet_text"]
     trace_entries = 0
 
-    trace = packet.get("trace")
-    if isinstance(trace, list):
-        trace_entries = len(trace)
-    elif isinstance(trace, dict):
-        trace_entries = 1
-
+    if isinstance(packet, dict):
+        if isinstance(packet.get("trace"), list):
+            trace_entries = len(packet["trace"])
+        elif isinstance(packet.get("trace"), dict):
+            trace_entries = 1
+    
     lines = [
         "# AES Demo Slide Bundle",
         "",
@@ -136,7 +59,7 @@ def _presentation_summary(state: PresentationState) -> str:
         "5. If present, use the comparison output or trace data to explain security/process behavior.",
         "",
         "## Current Demo Snapshot",
-        f"- Plaintext length: {len(state['plaintext'])} characters",
+        f"- Plaintext length: {len(cast(str, state['plaintext']))} characters",        
         f"- Packet JSON present: {'yes' if packet_text else 'no'}",
         f"- Decrypted output present: {'yes' if state['decrypted_text'] else 'no'}",
         f"- Pattern demo present: {'yes' if state['comparison_text'] else 'no'}",
@@ -152,58 +75,7 @@ def _presentation_summary(state: PresentationState) -> str:
     return "\n".join(lines) + "\n"
 
 
-def _presenter_script(state: PresentationState) -> str:
-    packet = state["packet"]
-    trace = packet.get("trace")
-    trace_entries = len(trace) if isinstance(trace, list) else 0
-    aad_text = state["aad_text"] or "None"
-
-    slides = [
-        ("Slide 1 - Goal", [
-            f"Today I am demonstrating the {state['engine']} path of the AES simulator.",
-            f"The selected mode is {state['mode']} with a {state['key_size_bits']}-bit key.",
-            "The goal is to show plaintext input, encryption output, and what changes depending on the mode or engine.",
-        ]),
-        ("Slide 2 - Inputs", [
-            f"This plaintext is: {state['plaintext']}",
-            f"The IV or nonce shown in the simulator is: {state['iv_hex'] or 'generated in app'}.",
-            f"Additional authenticated data is: {aad_text}.",
-        ]),
-        ("Slide 3 - Packet", [
-            "Here I focus on the encrypted packet JSON.",
-            "I point out the mode, IV or nonce, ciphertext, and any tag or trace metadata.",
-            f"The packet currently includes keys: {', '.join(packet.keys()) if packet else 'none yet'}.",
-        ]),
-        ("Slide 4 - Decryption", [
-            f"After decryption, the simulator returns: {state['decrypted_text'] or 'no decrypted output exported yet'}.",
-            "This confirms the round-trip when the correct key and supporting values are used.",
-        ]),
-    ]
-
-    if state["comparison_text"]:
-        slides.append(("Slide 5 - Pattern Leakage", [
-            "The comparison output helps explain why ECB leaks patterns while CBC and GCM hide repetition better.",
-            "I use this slide to connect the simulator output to secure mode selection.",
-        ]))
-
-    if trace_entries:
-        slides.append(("Slide 6 - Rijndael Trace", [
-            f"The exported trace contains {trace_entries} trace entries for the current packet.",
-            "I use this to discuss AddRoundKey, SubBytes, ShiftRows, MixColumns, and why the final round differs.",
-        ]))
-
-    lines = ["# Presenter Script", ""]
-    for title, notes in slides:
-        lines.append(f"## {title}")
-        lines.append("")
-        for note in notes:
-            lines.append(f"- {note}")
-        lines.append("")
-
-    return "\n".join(lines).rstrip() + "\n"
-
-
-def _collect_export_state(app: "AESSimulatorApp") -> PresentationState:
+def _collect_export_state(app: "AESSimulatorApp") -> dict[str, object]:
     packet_text = app.packet_box.get("1.0", tk.END).strip()
     packet: dict[str, object] = {}
     if packet_text:
@@ -232,13 +104,12 @@ def _collect_export_state(app: "AESSimulatorApp") -> PresentationState:
     }
 
 
-def export_presentation_bundle(state: PresentationState, export_root: Path) -> Path:
+def export_presentation_bundle(state: dict[str, object], export_root: Path) -> Path:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     bundle_dir = export_root / f"aes_demo_bundle_{timestamp}"
     bundle_dir.mkdir(parents=True, exist_ok=False)
 
     summary_text = _presentation_summary(state)
-    presenter_script = _presenter_script(state)
     metadata = {
         "exported_at": state["exported_at"],
         "engine": state["engine"],
@@ -249,7 +120,6 @@ def export_presentation_bundle(state: PresentationState, export_root: Path) -> P
     }
 
     (bundle_dir / "slide_notes.md").write_text(summary_text, encoding="utf-8")
-    (bundle_dir / "presenter_script.md").write_text(presenter_script, encoding="utf-8")
     (bundle_dir / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
     (bundle_dir / "plaintext.txt").write_text(str(state["plaintext"]), encoding="utf-8")
     (bundle_dir / "decrypted_output.txt").write_text(str(state["decrypted_text"]), encoding="utf-8")
@@ -279,7 +149,6 @@ class AESSimulatorApp:
         self.engine_var = tk.StringVar(value="Standard")
         self.mode_var = tk.StringVar(value="CBC")
         self.key_size_var = tk.StringVar(value="256")
-        self.preset_var = tk.StringVar(value="Standard CBC Walkthrough")
         self.process_trace_var = tk.BooleanVar(value=False)
 
         self._build_ui()
@@ -310,13 +179,6 @@ class AESSimulatorApp:
 
         tk.Button(top, text="Generate Key + IV", command=self.generate_material).grid(
             row=0, column=6, padx=(12, 0)
-        )
-
-        self.preset_menu = tk.OptionMenu(top, self.preset_var, *PRESENTATION_PRESETS.keys())
-        self.preset_menu.grid(row=1, column=1, sticky="w", pady=(6, 0))
-        tk.Label(top, text="Presentation Preset:").grid(row=1, column=0, sticky="w", pady=(6, 0))
-        tk.Button(top, text="Load Preset", command=self.load_presentation_preset).grid(
-            row=1, column=2, sticky="w", padx=(12, 0), pady=(6, 0)
         )
 
         self.trace_checkbox = tk.Checkbutton(
@@ -440,42 +302,6 @@ class AESSimulatorApp:
             self.status_var.set("Generated fresh key and IV/nonce")
         except Exception as exc:
             messagebox.showerror("Generation Error", str(exc))
-
-    def load_presentation_preset(self) -> None:
-        try:
-            preset = PRESENTATION_PRESETS[self.preset_var.get()]
-
-            self.engine_var.set(str(preset["engine"]))
-            self._on_engine_change()
-
-            self.mode_var.set(str(preset["mode"]))
-            self.key_size_var.set(str(preset["key_size_bits"]))
-            self.process_trace_var.set(bool(preset["process_trace_enabled"]))
-            self._on_mode_change()
-
-            self.key_entry.delete(0, tk.END)
-            self.key_entry.insert(0, str(preset["key_hex"]))
-
-            self.iv_entry.delete(0, tk.END)
-            self.iv_entry.insert(0, str(preset["iv_hex"]))
-
-            self.aad_entry.config(state="normal")
-            self.aad_entry.delete(0, tk.END)
-            self.aad_entry.insert(0, str(preset["aad_text"]))
-            self._on_mode_change()
-
-            self.plaintext_box.delete("1.0", tk.END)
-            self.plaintext_box.insert(tk.END, str(preset["plaintext"]))
-
-            self.encrypt()
-            self.decrypt()
-
-            if bool(preset["run_pattern_demo"]):
-                self.run_pattern_demo()
-
-            self.status_var.set(f"Loaded presentation preset: {self.preset_var.get()}")
-        except Exception as exc:
-            messagebox.showerror("Preset Error", str(exc))
 
     def encrypt(self) -> None:
         try:
