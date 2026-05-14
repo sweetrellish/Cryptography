@@ -9,11 +9,11 @@
 <body>
   <main class="page">
     <section class="hero">
-      <p class="eyebrow">Cryptography Presentation Mode</p>
-      <h1>AES Demo For Slides And Live Walkthroughs</h1>
+      <p class="eyebrow">MATH 447 Cryptography Presentation</p>
+      <h1>AES Encryption Demo</h1>
       <p class="lede">
-        Use this browser version as a fallback when PowerPoint embedding is awkward. It supports live
-        AES-CBC and AES-GCM examples in the browser, plus a Rijndael trace viewer for exported trace files.
+        An interactive AES encryption/decryption simulator designed for live presentations. It includes
+        AES-CBC and AES-GCM examples, plus a Rijndael trace viewer for exported trace files.
       </p>
     </section>
 
@@ -28,8 +28,8 @@
         <label>
           Engine
           <select id="engineSelect">
-            <option value="CBC">Standard CBC</option>
-            <option value="GCM">Standard GCM</option>
+            <option value="CBC">Standard Cipher Block Chaining (CBC)</option>
+            <option value="GCM">Standard Galois/Counter Mode (GCM)</option>
             <option value="TRACE">Rijndael Trace Viewer</option>
           </select>
         </label>
@@ -80,7 +80,7 @@
 
     <section class="grid-two">
       <article class="panel">
-        <h2>Presenter Notes</h2>
+        <h2>Notes</h2>
         <div id="notesOutput" class="notes"></div>
       </article>
 

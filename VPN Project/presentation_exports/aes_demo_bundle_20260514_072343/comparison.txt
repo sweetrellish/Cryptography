@@ -1,0 +1,12 @@
+Pattern Leakage Demo
+Sample length: 49 bytes
+
+Repeated ciphertext blocks (16-byte blocks):
+ECB: 0 repeated
+CBC: 0 repeated
+GCM: 0 repeated
+
+Interpretation:
+- ECB often leaks plaintext patterns through repeated ciphertext blocks.
+- CBC and GCM reduce this visible repetition for the same input pattern.
+- GCM additionally provides integrity/authentication via a tag.

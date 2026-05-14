@@ -1,5 +1,5 @@
 """
-AES Encryption Simulator (MATH 447 starter)
+AES Encryption Simulator (MATH 447 Cryptography Presentation Mode)
 
 This standalone GUI focuses on AES encryption/decryption concepts.
 It supports AES-CBC (with PKCS7 padding) and AES-GCM (authenticated encryption).
@@ -61,9 +61,9 @@ class PresentationState(TypedDict):
 
 
 PRESENTATION_PRESETS: dict[str, PresentationPreset] = {
-    "Standard CBC Walkthrough": {
+    "Standard Cipher Block Chaining (CBC)": {
         "engine": "Standard",
-        "mode": "CBC",
+        "mode": "Cipher Block Chaining (CBC)",
         "key_size_bits": "128",
         "key_hex": "00112233445566778899aabbccddeeff",
         "iv_hex": "0f0e0d0c0b0a09080706050403020100",
@@ -72,9 +72,9 @@ PRESENTATION_PRESETS: dict[str, PresentationPreset] = {
         "process_trace_enabled": False,
         "run_pattern_demo": False,
     },
-    "Standard GCM Integrity Demo": {
+    "Standard Galois/Counter Mode (GCM) Integrity Demo": {
         "engine": "Standard",
-        "mode": "GCM",
+        "mode": "Galois/Counter Mode (GCM)",
         "key_size_bits": "256",
         "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
         "iv_hex": "1a1b1c1d1e1f202122232425",
@@ -85,7 +85,7 @@ PRESENTATION_PRESETS: dict[str, PresentationPreset] = {
     },
     "Rijndael Trace Walkthrough": {
         "engine": "Rijndael Process",
-        "mode": "CBC",
+        "mode": "Cipher Block Chaining (CBC)",
         "key_size_bits": "128",
         "key_hex": "000102030405060708090a0b0c0d0e0f",
         "iv_hex": "0f0e0d0c0b0a09080706050403020100",
@@ -96,7 +96,7 @@ PRESENTATION_PRESETS: dict[str, PresentationPreset] = {
     },
     "Pattern Leakage Demo": {
         "engine": "Standard",
-        "mode": "CBC",
+        "mode": "Cipher Block Chaining (CBC)",
         "key_size_bits": "256",
         "key_hex": "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff",
         "iv_hex": "11223344556677889900aabbccddeeff",

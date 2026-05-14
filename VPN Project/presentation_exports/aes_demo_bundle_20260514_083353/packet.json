@@ -1,0 +1,9 @@
+{
+  "mode": "CBC",
+  "iv": "Dw4NDAsKCQgHBgUEAwIBAA==",
+  "ciphertext": "tniecBhvJj8X3K9XxIh62mIbAtcGXaPeqqmmZmzlHOoGjYtB11id4GW526kFgAq5",
+  "tag": null,
+  "aad": null,
+  "engine": "Standard",
+  "key_size_bits": 128
+}

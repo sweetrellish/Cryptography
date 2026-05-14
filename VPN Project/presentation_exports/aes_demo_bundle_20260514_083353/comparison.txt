@@ -1,0 +1,2 @@
+Process trace blocks generated during decryption: 9
+Tip: inspect packet JSON for full encryption trace and use include-trace for decrypt trace.

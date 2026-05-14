@@ -1,0 +1,8 @@
+{
+  "exported_at": "2026-05-14T08:33:53",
+  "engine": "Standard",
+  "mode": "CBC",
+  "key_size_bits": "128",
+  "process_trace_enabled": false,
+  "status": "Decryption complete"
+}

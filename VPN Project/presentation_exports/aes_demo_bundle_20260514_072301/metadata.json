@@ -1,0 +1,8 @@
+{
+  "exported_at": "2026-05-14T07:23:01",
+  "engine": "Rijndael Process",
+  "mode": "CBC",
+  "key_size_bits": "128",
+  "process_trace_enabled": true,
+  "status": "Engine: Rijndael Process (AES-128 CBC with optional round tracing)"
+}

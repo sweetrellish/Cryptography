@@ -4,7 +4,7 @@ const presets = {
     keyHex: "00112233445566778899aabbccddeeff",
     ivHex: "0f0e0d0c0b0a09080706050403020100",
     aad: "",
-    plaintext: "Meet at 5 PM by the library steps.",
+    plaintext: "The quick brown fox jumps over the lazy dog.",
   },
   "Standard GCM Integrity Demo": {
     engine: "GCM",
