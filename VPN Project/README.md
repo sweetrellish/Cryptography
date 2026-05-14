@@ -86,6 +86,38 @@ Inside the AES starter:
 - Choose `Engine = Standard` for library-backed AES-CBC and AES-GCM demos.
 - Choose `Engine = Rijndael Process` for a step-focused AES-128 CBC flow that can include round traces.
 - Enable `Include process trace` before encryption/decryption to include transformation details in packet/results.
+- Use `Presentation Preset` plus `Load Preset` for fast rehearsal states such as CBC walkthrough, GCM integrity, Rijndael trace, and pattern leakage.
+- Use `Export Slide Bundle` to save presentation-ready files under `presentation_exports/`.
+
+The slide bundle includes:
+
+- `slide_notes.md`: a suggested slide flow and speaking notes based on the current demo state
+- `presenter_script.md`: a slide-by-slide presenter outline you can read from during the talk
+- `packet.json`: the current encrypted packet for zoomed-in slide screenshots or pasted code blocks
+- `plaintext.txt` and `decrypted_output.txt`: before/after text for slides
+- `comparison.txt`: mode-comparison output for an ECB/CBC/GCM explanation slide
+- `trace.json`: Rijndael process trace data when the current packet contains trace information
+- `metadata.json` and `input_materials.json`: engine/mode/key/IV context for speaker reference
+
+## Browser Fallback Demo
+
+If PowerPoint embedding or screen sharing becomes awkward, use the static browser demo in `presentation_web/`.
+
+Features:
+
+- Live AES-CBC demo in the browser
+- Live AES-GCM demo in the browser
+- Rijndael trace viewer for exported `trace.json` files
+- Matching presentation presets for quick rehearsal
+
+Run it locally:
+
+```bash
+cd presentation_web
+python3 -m http.server 8000
+```
+
+Then open `http://localhost:8000` in your browser.
 
 Inside the AES starter, use the Mode Comparison Lab button to run an ECB vs CBC vs GCM pattern-leakage demo.
 

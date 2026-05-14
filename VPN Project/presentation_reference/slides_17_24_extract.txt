@@ -1,0 +1,93 @@
+===== Slide 17 =====
+AES DEMO
+17
+
+===== Slide 18 =====
+AES Decryption Process
+AES decryption applies inverse operations:
+• Inverse SubBytes
+• Inverse ShiftRows
+• Inverse MixColumns
+• AddRoundKey (Round keys are used in reverse order)
+Result:
+• Original plaintext is reconstructed from ciphertext
+18
+
+===== Slide 19 =====
+DES vs AES
+Most important - 56-bit key (DES) vs 128-bit(+) key 
+(AES)
+Allows AES to be faster than DES since it can process info faster, 
+making AES more efficient and scalable
+Greater security – 256 potential keys (DES) vs 2128 or 2192 or 
+2256 AES(128,192,256)
+AES is computationally heavier due to requiring 
+more complex rounds of transformation and the 
+larger key size
+Allows DES to run in some situations AES may not be able to (e.g., 
+embedded or legacy systems)
+Security drawbacks and the average device having enough computation 
+power make this point largely moot
+19
+
+===== Slide 20 =====
+Strengths of AES
+• Resilient against brute force – Even if the "DES Cracker" device 
+could crack a DES key in one second it would still take 
+approximately 149 trillion years to crack AES-128
+• Open nature allows cybersecurity experts to be on a constant look 
+out for potential vulnerabilities
+20
+
+===== Slide 21 =====
+Weaknesses of AES
+• In 2009 a cryptoanalysis discovered attackers could try to crack a 
+system by seeing how it operates using different keys
+• Experts have concluded this can only happen in AES systems that are not 
+properly configured
+• Vulnerable to side-channel attacks where attackers try to pick up 
+information leaking from the system to see how it works
+• Can only happen in non-secure, improperly configured systems
+• Dependent on proper configuration and security of the key – 
+vulnerable to human error
+21
+
+===== Slide 22 =====
+Key Management
+• AES security depends on protecting the encryption key
+• Weak or exposed keys compromise otherwise secure systems
+• Secure key exchange and storage are critical
+• Solutions:
+• Public Key Infrastructure (PKI) - Method of securely exchanging keys 
+where the key is encrypted with a public encryption key, and decrypted 
+with a private decryption key
+• Hardware Security Modules (HSMs) - A physical computing device that 
+protects and manages a private key. Used for secure key storage.
+• Key rotation policies – Rotating used keys to limit the chances for 
+attackers to gain information on the system of encryption
+22
+
+===== Slide 23 =====
+Mode of Operation
+• AES is a block cipher and requires a mode of operation to 
+securely handle data larger than 128 bits
+o These modes  apply to any symmetric key block cipher algorithm
+• Some modes are insecure if used improperly
+Modes:
+• ECB – Simple and encrypts each block identically. 
+• CBC – A forward cipher in which the output of the prior block is XOR'd 
+with the current block's plaintext before the cipher is applied
+• GCM - uses universal hashing overa binary Galois field to provide 
+authenticated encryption
+23
+
+===== Slide 24 =====
+Mode of Operation
+Which mode is recommended?
+Mode Status Notes
+ECB Insecure Reveals patterns
+CBC Not the best choice Confidentiality not 
+integrity
+GCM The Modern Standard Encryption + 
+authentication
+24

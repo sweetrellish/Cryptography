@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AES Presentation Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">Cryptography Presentation Mode</p>
+      <h1>AES Demo For Slides And Live Walkthroughs</h1>
+      <p class="lede">
+        Use this browser version as a fallback when PowerPoint embedding is awkward. It supports live
+        AES-CBC and AES-GCM examples in the browser, plus a Rijndael trace viewer for exported trace files.
+      </p>
+    </section>
+
+    <section class="panel controls">
+      <div class="field-row preset-row">
+        <label for="presetSelect">Presentation Preset</label>
+        <select id="presetSelect"></select>
+        <button id="loadPresetButton" type="button">Load Preset</button>
+      </div>
+
+      <div class="field-grid">
+        <label>
+          Engine
+          <select id="engineSelect">
+            <option value="CBC">Standard CBC</option>
+            <option value="GCM">Standard GCM</option>
+            <option value="TRACE">Rijndael Trace Viewer</option>
+          </select>
+        </label>
+
+        <label>
+          Key (hex)
+          <input id="keyInput" type="text" spellcheck="false">
+        </label>
+
+        <label>
+          IV / Nonce (hex)
+          <input id="ivInput" type="text" spellcheck="false">
+        </label>
+
+        <label>
+          AAD (GCM)
+          <input id="aadInput" type="text">
+        </label>
+      </div>
+
+      <label class="block-field">
+        Plaintext
+        <textarea id="plaintextInput" rows="5"></textarea>
+      </label>
+
+      <div class="button-row">
+        <button id="encryptButton" type="button">Encrypt</button>
+        <button id="decryptButton" type="button">Decrypt</button>
+        <button id="patternButton" type="button">Explain Mode Choice</button>
+        <label class="file-button">
+          Load Trace JSON
+          <input id="traceFileInput" type="file" accept=".json,application/json">
+        </label>
+      </div>
+    </section>
+
+    <section class="grid-two">
+      <article class="panel">
+        <h2>Packet / Output</h2>
+        <pre id="packetOutput">{}</pre>
+      </article>
+
+      <article class="panel">
+        <h2>Decrypted Text</h2>
+        <pre id="decryptedOutput"></pre>
+      </article>
+    </section>
+
+    <section class="grid-two">
+      <article class="panel">
+        <h2>Presenter Notes</h2>
+        <div id="notesOutput" class="notes"></div>
+      </article>
+
+      <article class="panel">
+        <h2>Rijndael Trace Viewer</h2>
+        <div id="traceOutput" class="trace-list">
+          <p class="muted">Load a <code>trace.json</code> file exported from the Tkinter app to walk through Rijndael steps.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
