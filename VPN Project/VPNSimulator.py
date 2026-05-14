@@ -234,6 +234,12 @@ def simulate_vpn():
             encrypted = encrypt_message(packet_json, derived_key)
             decrypted_json = decrypt_message(encrypted, derived_key)
             try:
+                if decrypted_json is None:
+                    server_box.insert(tk.END, "Decryption error: Empty response\n\n")
+                    continue
+                if decrypted_json.startswith("Decryption error:"):
+                    server_box.insert(tk.END, decrypted_json + "\n\n")  # Display decryption error
+                    continue    
                 decrypted_packet = json.loads(decrypted_json)
                 server_box.insert(tk.END, json.dumps(decrypted_packet, indent=2))
                 

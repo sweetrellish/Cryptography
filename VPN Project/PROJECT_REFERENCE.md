@@ -197,7 +197,7 @@ Use this structure for each experiment writeup.
 
 ### K) Quick Fill-In Example
 
-```
+```text
 Experiment title: ECB vs CBC vs GCM Pattern Leakage
 Question: Does ECB reveal repeated plaintext structure more than CBC/GCM?
 Input pattern: "A" * 64
